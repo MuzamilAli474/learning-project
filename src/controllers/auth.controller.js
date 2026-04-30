@@ -1,0 +1,61 @@
+import * as authService from '../services/auth.service.js';
+import { successResponse, errorResponse } from '../utils/response.util.js';
+import { asyncHandler, AppError } from '../utils/error.util.js';
+
+export const register = asyncHandler(async (req, res) => {
+  const user = await authService.registerUser(req.body);
+  return successResponse(res, user, 'User registered successfully', 201);
+});
+
+export const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const { user, token } = await authService.loginUser(email, password);
+  return successResponse(res, { user, token }, 'Login successful');
+});
+
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) throw new Error('Authorization token is required');
+  if (!req.body || !req.body.otp) throw new Error('OTP is required in request body');
+  
+  const { otp } = req.body;
+  const result = await authService.verifyEmail(token, otp);
+  return successResponse(res, result, 'Email verified successfully');
+});
+
+export const resendOTP = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new Error('Email is required in request body');
+  const result = await authService.resendOTP(email);
+  return successResponse(res, result, 'OTP resent successfully');
+});
+
+export const forgetPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  console.log(email,"email");
+  if (!email) throw new Error('Email is required in request body');
+  const result = await authService.forgetpassword(email);
+  return successResponse(res, result, 'Forget password email sent successfully');
+});
+
+
+export const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) throw new Error('Authorization token is required');
+  if (!req.body || !req.body.otp) throw new Error('OTP is required in request body');
+  
+  const { otp } = req.body;
+  const result = await authService.verfifyForgetPasswordotp(token, otp);
+  return successResponse(res, result, 'Forget password OTP verified successfully');
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) throw new Error('Authorization token is required');
+  const { password } = req.body;
+  if (!password) throw new Error('Password is required in request body');
+  const result = await authService.resetPassword(token, password);
+  return successResponse(res, result, 'Password reset successfully');
+});
+
+

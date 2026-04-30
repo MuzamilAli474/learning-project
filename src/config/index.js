@@ -15,4 +15,18 @@ export const config = {
   mongoose: {
     url: process.env.MONGODB_URL,
   },
+  jwt: {
+    accessSecret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+    accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
+    refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
+  },
+  email: {
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: process.env.EMAIL_PORT || 587,
+    secure: process.env.EMAIL_SECURE === 'true',
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+    from: process.env.EMAIL_FROM || 'noreply@example.com',
+  },
 };
