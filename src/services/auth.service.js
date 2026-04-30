@@ -86,7 +86,7 @@ export const verfifyForgetPasswordotp = async (token,otp) => {
     throw new Error('Token and OTP are required');
   }
   const decoded = verifyAccessToken(token);
-  const user = await User.findById(decoded.id);
+  const user = await User.findById(decoded.id).select('-password -otp');
   if (!user) throw new Error('User not found');
   await verifyOTP(user._id, otp);
 
@@ -103,11 +103,14 @@ export const resetPassword = async (token, password) => {
     throw new Error('Token and password are required');
   }
   const decoded = verifyAccessToken(token);
-  const user = await User.findById(decoded.id);
+  const user = await User.findById(decoded.id).select('-password');
   if (!user) throw new Error('User not found');
   
   user.password = password;
   await user.save();
   
-  return { user };
+  const userObject = user.toObject();
+  delete userObject.password;
+  
+  return { user: userObject };
 };

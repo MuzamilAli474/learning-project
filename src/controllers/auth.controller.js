@@ -50,10 +50,11 @@ export const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
+  if (!req.body || !req.body.password) throw new Error('Password is required in request body')
+  if(!req.headers.authorization) throw new Error('Authorization header is required');
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) throw new Error('Authorization token is required');
   const { password } = req.body;
-  if (!password) throw new Error('Password is required in request body');
   const result = await authService.resetPassword(token, password);
   return successResponse(res, result, 'Password reset successfully');
 });
