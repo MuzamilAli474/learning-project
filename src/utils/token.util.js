@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/index.js';
 
 export const generateAccessToken = (payload) => {
-  return jwt.sign(payload, config.jwt.accessSecret, {
+  return jwt.sign({ ...payload, type: 'access' }, config.jwt.accessSecret, {
     expiresIn: config.jwt.accessExpiry,
   });
 };
@@ -29,4 +29,24 @@ export const generateTokens = (payload) => {
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
   return { accessToken, refreshToken };
+};
+
+export const generateVerifyEmailToken = (payload) => {
+  return jwt.sign({ ...payload, type: 'verify-email' }, config.jwt.accessSecret, {
+    expiresIn: '24h',
+  });
+};
+
+export const generateResetPasswordToken = (payload) => {
+  return jwt.sign({ ...payload, type: 'reset-password' }, config.jwt.accessSecret, {
+    expiresIn: '15m',
+  });
+};
+
+export const verifyTokenType = (token, expectedType) => {
+  const decoded = jwt.verify(token, config.jwt.accessSecret);
+  if (decoded.type !== expectedType) {
+    throw new Error(`Invalid token type. Expected ${expectedType} but got ${decoded.type || 'none'}`);
+  }
+  return decoded;
 };

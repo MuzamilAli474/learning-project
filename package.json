@@ -9,6 +9,7 @@
     "qa": "NODE_ENV=qa nodemon src/server.js",
     "staging": "NODE_ENV=staging nodemon src/server.js",
     "start": "NODE_ENV=production node src/server.js"
+    
   },
   "keywords": [],
   "author": "",

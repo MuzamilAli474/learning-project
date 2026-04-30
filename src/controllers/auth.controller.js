@@ -9,8 +9,8 @@ export const register = asyncHandler(async (req, res) => {
 
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const { user, token } = await authService.loginUser(email, password);
-  return successResponse(res, { user, token }, 'Login successful');
+  const { user, accessToken, refreshToken } = await authService.loginUser(email, password);
+  return successResponse(res, { user, accessToken, refreshToken }, 'Login successful');
 });
 
 export const verifyEmail = asyncHandler(async (req, res) => {
