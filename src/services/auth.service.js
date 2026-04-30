@@ -31,7 +31,6 @@ export const verifyEmail = async (token, otp) => {
   const decoded = verifyAccessToken(token);
   const user = await User.findById(decoded.id);
   if (!user) throw new Error('User not found');
-  
   if (!user.otp || !user.otp.code) throw new Error('OTP not requested');
   if (user.otp.code !== otp) throw new Error('Invalid OTP');
   if (new Date() > user.otp.expiresAt) throw new Error('OTP expired');
