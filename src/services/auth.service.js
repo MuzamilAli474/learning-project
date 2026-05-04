@@ -141,3 +141,15 @@ export const refreshAccessToken = async (incomingRefreshToken) => {
   const { accessToken, refreshToken } = generateTokens({ id: user._id });
   return { accessToken, refreshToken };
 };
+
+
+export const adminLogin = async (email, password) => {
+  const user = await User.findOne({ email, role: 'admin' }).select('+password');
+  if (!user || !(await user.comparePassword(password))) {
+    throw new Error('Invalid email or password');
+  }
+  user.lastLogin = new Date();
+  await user.save();
+  const { accessToken, refreshToken } = generateTokens({ id: user._id , role: 'admin' });
+  return { user, accessToken, refreshToken };
+};

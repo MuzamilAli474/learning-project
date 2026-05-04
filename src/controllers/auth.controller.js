@@ -68,3 +68,15 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   const result = await authService.refreshAccessToken(refreshToken);
   return successResponse(res, result, 'Access token refreshed successfully');
 });
+
+export const adminLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || typeof email !== 'string') {
+    throw new AppError('Email is required in request body', 400);
+  }
+  if (!password || typeof password !== 'string') {
+    throw new AppError('Password is required in request body', 400);
+  }
+  const result = await authService.adminLogin(email, password);
+  return successResponse(res, result, 'Admin login successful');
+});
