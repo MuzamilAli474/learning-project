@@ -60,3 +60,11 @@ export const resetPassword = asyncHandler(async (req, res) => {
 });
 
 
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body || {};
+  if (!refreshToken || typeof refreshToken !== 'string') {
+    throw new AppError('Refresh token is required in request body', 400);
+  }
+  const result = await authService.refreshAccessToken(refreshToken);
+  return successResponse(res, result, 'Access token refreshed successfully');
+});

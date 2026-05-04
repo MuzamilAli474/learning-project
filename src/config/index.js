@@ -18,7 +18,7 @@ export const config = {
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
-    accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
+    accessExpiry: process.env.JWT_ACCESS_EXPIRY || '7d',
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
   email: {

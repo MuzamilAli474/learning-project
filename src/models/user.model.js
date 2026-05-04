@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
     isSuspended: { type: Boolean, default: false },
     suspensionEndsAt: { type: Date },
     lastLogin: { type: Date },
+    role: { type: String, enum: ["admin", "user"], default: "user" },
 
     // Notifications with Multi-Device Support
     isNotificationEnabled: { type: Boolean, default: true },
@@ -35,6 +36,15 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+const sanitizeUserForClient = (_doc, ret) => {
+  delete ret.password;
+  delete ret.otp;
+  return ret;
+};
+
+userSchema.set("toJSON", { transform: sanitizeUserForClient });
+userSchema.set("toObject", { transform: sanitizeUserForClient });
 
 // Hash password before saving
 userSchema.pre("save", async function () {

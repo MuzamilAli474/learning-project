@@ -1,5 +1,13 @@
 import User from '../models/user.model.js';
-import { generateTokens, verifyAccessToken, generateVerifyEmailToken, generateResetPasswordToken, verifyTokenType } from '../utils/token.util.js';
+import { AppError } from '../utils/error.util.js';
+import {
+  generateTokens,
+  verifyAccessToken,
+  generateVerifyEmailToken,
+  generateResetPasswordToken,
+  verifyTokenType,
+  verifyRefreshToken,
+} from '../utils/token.util.js';
 import { sendOTP, verifyOTP } from './otp.service.js';
 
 export const registerUser = async (userData) => {
@@ -13,7 +21,6 @@ export const registerUser = async (userData) => {
   
   const user = await User.create(userData);
   const userObject = user.toObject();
-  delete userObject.password;
 
   // Send OTP for email verification
   const otpResult = await sendOTP(user._id);
@@ -110,8 +117,27 @@ export const resetPassword = async (token, password) => {
   user.password = password;
   await user.save();
   
-  const userObject = user.toObject();
-  delete userObject.password;
-  
-  return { user: userObject };
+  return { user: user.toObject() };
+};
+
+
+
+export const refreshAccessToken = async (incomingRefreshToken) => {
+  if (!incomingRefreshToken || typeof incomingRefreshToken !== 'string') {
+    throw new AppError('Refresh token is required', 400);
+  }
+
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(incomingRefreshToken);
+  } catch (e) {
+    if (e instanceof AppError) throw e;
+    throw new AppError('Invalid or expired refresh token', 401);
+  }
+
+  const user = await User.findById(decoded.id).select('-password -otp');
+  if (!user) throw new AppError('User not found', 404);
+
+  const { accessToken, refreshToken } = generateTokens({ id: user._id });
+  return { accessToken, refreshToken };
 };

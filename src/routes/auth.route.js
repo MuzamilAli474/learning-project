@@ -10,5 +10,5 @@ router.post('/resend-otp', authController.resendOTP);
 router.post('/forget-password', authController.forgetPassword);
 router.post('/verify-forget-password-otp', authController.verifyForgetPasswordOTP);
 router.post('/reset-password', authController.resetPassword);
-
+router.post('/refresh-access-token', authController.refreshAccessToken);
 export default router;

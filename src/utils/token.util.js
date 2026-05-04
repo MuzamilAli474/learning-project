@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/index.js';
+import { AppError } from './error.util.js';
 
 export const generateAccessToken = (payload) => {
   return jwt.sign({ ...payload, type: 'access' }, config.jwt.accessSecret, {
@@ -8,7 +9,7 @@ export const generateAccessToken = (payload) => {
 };
 
 export const generateRefreshToken = (payload) => {
-  return jwt.sign(payload, config.jwt.refreshSecret, {
+  return jwt.sign({ ...payload, type: 'refresh' }, config.jwt.refreshSecret, {
     expiresIn: config.jwt.refreshExpiry,
   });
 };
@@ -18,7 +19,14 @@ export const verifyAccessToken = (token) => {
 };
 
 export const verifyRefreshToken = (token) => {
-  return jwt.verify(token, config.jwt.refreshSecret);
+  const decoded = jwt.verify(token, config.jwt.refreshSecret);
+  if (decoded.type !== 'refresh') {
+    throw new AppError(
+      'Use the refresh token from login, not the access token',
+      401
+    );
+  }
+  return decoded;
 };
 
 export const decodeToken = (token) => {
